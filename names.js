@@ -651,27 +651,28 @@ const unisexLate20th = []
 const unisex21st = []
 let arrayM = []
 let arrayF = []
-const findUnisexInPeriod = (decadesM, decadesF) => {
+const findUnisexInPeriod = (allDecadesM, allDecadesF) => {
   // all decadeM are shorter than decadeF
-  for (let i = 0; i < decadesM.length; i++) {
-    const decadeM = decadesM[i]
-    const decadeF = decadesF[i]
-    let runNum = decadeM.length
-    // all unisexLate19th names in unisexEarly20th
+  for (let i = 0; i < allDecadesM.length; i++) {
+    const decadeM = allDecadesM[i]
+    const decadeF = allDecadesF[i]
+    let runNum // determines how many names added to arrayM and arrayF
+    // not making unisexLate19th array: all the names are in unisexEarly20th
     let newArray = unisexEarly20th
-    if (runNum <= 205) {
-      runNum = 100
-    } else {
+    if (i === 2) { // m1900sTop200
+      runNum = 200
+    } else if (i >= 3 && i <= 6) { // m1910s, m1920s, m1930s, m1940s
       runNum = 334
-    }
-    if (i >= 7 && i <= 11) {
+    } else if (i >= 7 && i <= 11) { // m1950s, m1960s, m1970s, m1980s, m1990s
       newArray = unisexLate20th
       runNum = 250
-    }
-    if (i >= 12) {
+    } else if (i === 12 || i === 13) { // m2000s, m2010s
       newArray = unisex21st
       runNum = 600
+    } else { // m1880sTop200, m1890sTop200
+      runNum = 0
     }
+
     for (let i = 0; i < runNum; i++) {
       let name = decadeM[i]
       addToArray(arrayM, name)
@@ -1026,8 +1027,7 @@ const seeWhichRankedFirst = () => {
     if (year1stRankedM < year1stRankedF || name === 'Charlie') {
       const years = 'Boys ' + year1stRankedM + ' / Girls ' + year1stRankedF
       boys1st.push(name, years)
-    }
-    if (year1stRankedM > year1stRankedF) {
+    } else { // (year1stRankedM > year1stRankedF)
       const years = 'Girls ' + year1stRankedF + ' / Boys ' + year1stRankedM
       girls1st.push(name, years)
     }
