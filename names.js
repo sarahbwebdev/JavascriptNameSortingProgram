@@ -658,7 +658,7 @@ const findUnisexInPeriod = (allDecadesM, allDecadesF) => {
   for (let i = 0; i < allDecadesM.length; i++) {
     const decadeM = allDecadesM[i]
     const decadeF = allDecadesF[i]
-    let runNum = decadeM.length // determines how many names added to arrayM and arrayF
+    let runNum // determines how many names added to arrayM and arrayF
     // not making unisexLate19th array: all the names are in unisexEarly20th
     let newArray = unisexEarly20th
     if (i >= 2 && i <= 6) { // m1900sTop200, m1910s, m1920s, m1930s, m1940s
@@ -1057,15 +1057,3 @@ seeWhichRankedFirst()
 console.log('totalForSite.length = ' + totalForSite.length)
 const startString = 'const totalForSite = ['
 showInBrowser(totalForSite, startString)
-
-const found = []
-const findStuff = () => {
-  totalForSite.forEach(name => {
-    if (name.includes('ie')) {
-      addToArray(found, name)
-    }
-  })
-}
-findStuff()
-found.sort()
-showInBrowser(found, 'stuff:')
