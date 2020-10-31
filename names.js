@@ -112,6 +112,7 @@ const add1forEachVowel = (name) => {
     }
   }
 }
+
 const subtract1ifVowelNotSyl = (name) => {
   // subtract for double vowels except ao eo eu ia ie io oa oe uo ya ye yi yo yu
   // ye part of aye, awy, eye, or has silent e
@@ -127,7 +128,7 @@ const subtract1ifVowelNotSyl = (name) => {
   }
   // subtract from sylCount for exceptions
   const exceptions1 = [
-    'Charles', 'Hayes', 'James', 'Miles', 'Myles', // 1syl name
+    'Charles', 'Hayes', 'James', 'Miles', 'Myles', 'Pierce', // 1syl name
     'Graham', // aha 1syl, 2syl in Abraham
     'Joan', 'Joaquin', // oa 1syl, 2syl in Joanna
     'Anya', 'Arya', // ya 1syl
@@ -142,12 +143,13 @@ const subtract1ifVowelNotSyl = (name) => {
   }
 }
 const subtract1forSilentE = (name) => {
-  // subtract from sylCount for silent e - already subtracted 1 for ee or ue
+  // subtract from sylCount for silent e
   const end1 = name.charAt(name.length - 1)
   const end2 = name.charAt(name.length - 2)
   const last2 = end2 + end1
-  if (end1 === 'e' && last2 !== 'ee' &&
-      end1 === 'e' && last2 !== 'ue') {
+  // already subtracted 1 for ee and ue in subtract1ifVowelNotSyl function
+  // ie is usually 2 syllables but at the end ie has a silent e
+  if (end1 === 'e' && last2 !== 'ee' && last2 !== 'ue') {
     sylCount = sylCount - 1
   }
 }
@@ -157,7 +159,7 @@ const add1forExceptions = (name) => {
     'Nevaeh', 'Chaim', 'Raul', 'Aleah', 'Beatrice', 'Deandre', 'Deangelo',
     'Keanu', 'Lea', 'Leah', 'Maleah', 'Rhea', 'Thea', 'Chloe', 'Coen', 'Joey',
     'Khloe', 'Noe', 'Noel', 'Zoe', 'Joshua', 'Emmanuel', 'Immanuel', 'Luella',
-    'Samuel', 'Luis', 'Louie', 'Louis', 'Louise',
+    'Samuel', 'Luis', 'Luisa', 'Louie', 'Louis', 'Louise',
     // e not silent
     'Andre', 'Dante', 'Jesse', 'Jorge', 'Jose', 'Daphne', 'Dulce', 'Esme',
     'Halle', 'Penelope', 'Zoie',
@@ -656,23 +658,20 @@ const findUnisexInPeriod = (allDecadesM, allDecadesF) => {
   for (let i = 0; i < allDecadesM.length; i++) {
     const decadeM = allDecadesM[i]
     const decadeF = allDecadesF[i]
-    let runNum // determines how many names added to arrayM and arrayF
+    let runNum = decadeM.length // determines how many names added to arrayM and arrayF
     // not making unisexLate19th array: all the names are in unisexEarly20th
     let newArray = unisexEarly20th
-    if (i === 2) { // m1900sTop200
-      runNum = 200
-    } else if (i >= 3 && i <= 6) { // m1910s, m1920s, m1930s, m1940s
-      runNum = 334
+    if (i >= 2 && i <= 6) { // m1900sTop200, m1910s, m1920s, m1930s, m1940s
+      runNum = Math.ceil(decadeM.length / 1.135) // for 36 (1.35 for 24)
     } else if (i >= 7 && i <= 11) { // m1950s, m1960s, m1970s, m1980s, m1990s
       newArray = unisexLate20th
-      runNum = 250
+      runNum = Math.ceil(decadeM.length / 1.435) // for 63 (48 new)
     } else if (i === 12 || i === 13) { // m2000s, m2010s
       newArray = unisex21st
-      runNum = 600
+      runNum = Math.ceil(decadeM.length / 1.3) // for 81 (48 new)
     } else { // m1880sTop200, m1890sTop200
       runNum = 0
     }
-
     for (let i = 0; i < runNum; i++) {
       let name = decadeM[i]
       addToArray(arrayM, name)
@@ -686,17 +685,35 @@ const findUnisexInPeriod = (allDecadesM, allDecadesF) => {
         addToArray(totalForSite, name)
       }
     }
+
     arrayM = []
     arrayF = []
   }
   unisexEarly20th.sort()
-  unisexLate20th.sort()
-  unisex21st.sort()
   showInBrowser(unisexEarly20th, 'const unisexEarly20th = [')
-  showInBrowser(unisexLate20th, 'const unisexLate20th = [')
-  showInBrowser(unisex21st, 'const unisex21st = [')
 }
 findUnisexInPeriod(allDecadesM, allDecadesF)
+
+const newInUnisexLate20th = []
+const newInUnisex21st = []
+const findNewUnisex = () => {
+  unisexLate20th.forEach(name => {
+    if (unisexEarly20th.includes(name) === false) {
+      newInUnisexLate20th.push(name)
+    }
+  })
+  unisex21st.forEach(name => {
+    if (unisexEarly20th.includes(name) === false &&
+        unisexLate20th.includes(name) === false) {
+      newInUnisex21st.push(name)
+    }
+  })
+}
+findNewUnisex()
+newInUnisexLate20th.sort()
+newInUnisex21st.sort()
+showInBrowser(newInUnisexLate20th, 'const newInUnisexLate20th = [')
+showInBrowser(newInUnisex21st, 'const newInUnisex21st = [')
 
 // WHO HAD IT FIRST? Ranked for Boys Before Girls, Ranked for Girls Before Boys
 const unisexDataSet = [
@@ -1040,3 +1057,15 @@ seeWhichRankedFirst()
 console.log('totalForSite.length = ' + totalForSite.length)
 const startString = 'const totalForSite = ['
 showInBrowser(totalForSite, startString)
+
+const found = []
+const findStuff = () => {
+  totalForSite.forEach(name => {
+    if (name.includes('ie')) {
+      addToArray(found, name)
+    }
+  })
+}
+findStuff()
+found.sort()
+showInBrowser(found, 'stuff:')
